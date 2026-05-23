@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Operaciones - @Aprendizajess</title>
+    <style>
+        /* --- VARIABLES GLOBALES --- */
+        :root {
+            --primary: #5A378C;
+            --primary-hover: #7047A6;
+            --bg-light: #F3F4F6;
+            --text-main: #333333;
+            --text-muted: #6B7280;
+            --grid-color: #9CA3AF;
+            --grid-line: #cbd5e1;
+            --white: #FFFFFF;
+            --danger: #EF4444;
+            --success: #10B981;
+        }
+
+        /* --- ESTILOS BASE --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- NAVEGACIÓN --- */
+        nav {
+            background-color: var(--primary);
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        nav button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        /* --- CONTENEDORES DE PANTALLA --- */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- PANTALLA PRINCIPAL (1) --- */
+        #screen-home {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .hero-logo {
+            max-width: 250px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .menu-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(90, 55, 140, 0.15);
+        }
+
+        .menu-icon { font-size: 2rem; }
+
+        /* --- ESTRUCTURA DE PANTALLAS DE TRABAJO --- */
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 992px) {
+            .workspace { flex-direction: row; }
+            .config-panel { width: 350px; flex-shrink: 0; }
+            .preview-panel { flex: 1; }
+        }
+
+        /* --- PANEL DE CONFIGURACIÓN --- */
+        .config-panel {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .config-panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--bg-light);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 1rem;
+            color: var(--white);
+        }
+
+        .btn-generate { background-color: var(--primary); }
+        .btn-generate:hover { background-color: var(--primary-hover); }
+        .btn-clear { background-color: var(--text-muted); }
+        .btn-clear:hover { background-color: #4B5563; }
+        .btn-action { background-color: var(--success); margin-bottom: 10px; width: 100%; }
+
+        /* --- VISTA PREVIA (HOJA CARTA) --- */
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .paper-sheet {
+            background: var(--white);
+            width: 215.9mm;
+            min-height: 279.4mm;
+            padding: 15mm;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .sheet-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .sheet-header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .sheet-title {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .exercises-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px 10px;
+            width: 100%;
+        }
+
+        .exercise-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .exercise-letter {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* --- CUADRÍCULA DE OPERACIONES (NUEVO) --- */
+        .op-grid {
+            display: inline-grid;
+            border-top: 1px solid var(--grid-line);
+            border-left: 1px solid var(--grid-line);
+            background-color: #fff;
+        }
+
+        .op-grid .cell {
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--grid-line);
+            border-bottom: 1px solid var(--grid-line);
+            font-family: monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        /* Formatos especiales de líneas para matemáticas */
+        .math-line-bottom { border-bottom: 3px solid var(--text-main) !important; }
+        .div-line-left { border-left: 2px solid var(--text-main) !important; }
+        .div-line-bottom { border-bottom: 2px solid var(--text-main) !important; }
+
+        .sheet-footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: rgba(255,255,255,0.9);
+            padding: 5px 0;
+        }
+
+        .answers-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--primary);
+            display: none; 
+        }
+
+        /* --- ESTILOS DE IMPRESIÓN (PDF) --- */
+        @media print {
+            body { background: none; }
+            nav, .config-panel, .btn-action, #screen-home { display: none !important; }
+            .screen { display: block !important; }
+            .workspace { padding: 0; display: block; }
+            .paper-sheet {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+            .answers-section {
+                page-break-before: always;
+                border-top: none;
+                display: block !important;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="top-nav" style="display: none;">
+        <button onclick="navigate('home')">🏠 Inicio</button>
+        <button id="nav-suma" onclick="navigate('suma')">➕ Suma</button>
+        <button id="nav-resta" onclick="navigate('resta')">➖ Resta</button>
+        <button id="nav-multiplicacion" onclick="navigate('multiplicacion')">✖️ Multiplicación</button>
+        <button id="nav-tablas" onclick="navigate('tablas')">🔢 Tablas</button>
+        <button id="nav-division" onclick="navigate('division')">➗ División</button>
+    </nav>
+
+    <div id="screen-home" class="screen active">
+        <img src="img/logo.png" alt="Logo @Aprendizajess" class="hero-logo" onerror="this.src='https://via.placeholder.com/250x80/5A378C/FFFFFF?text=Logo+Aprendizajess'">
+        <h1>Generador de Operaciones</h1>
+        <p class="subtitle">Herramienta académica exclusiva del consultorio <strong>@Aprendizajess</strong>, diseñada para que nuestros especialistas generen hojas de refuerzo matemático personalizadas.</p>
+        
+        <div class="menu-grid">
+            <div class="menu-card" onclick="navigate('suma')">
+                <span class="menu-icon">➕</span> Suma
+            </div>
+            <div class="menu-card" onclick="navigate('resta')">
+                <span class="menu-icon">➖</span> Resta
+            </div>
+            <div class="menu-card" onclick="navigate('multiplicacion')">
+                <span class="menu-icon">✖️</span> Multiplicación
+            </div>
+            <div class="menu-card" onclick="navigate('tablas')">
+                <span class="menu-icon">🔢</span> Tablas de Multiplicar
+            </div>
+            <div class="menu-card" onclick="navigate('division')">
+                <span class="menu-icon">➗</span> División
+            </div>
+        </div>
+    </div>
+
+    <div id="workspace-area" class="screen">
+        <div class="workspace">
+            
+            <div class="config-panel" id="dynamic-config"></div>
+
+            <div class="preview-panel">
+                <div style="width: 100%; max-width: 215.9mm;">
+                    <button class="btn btn-action" onclick="window.print()">🖨️ Descargar PDF / Imprimir Hojas</button>
+                </div>
+                
+                <div class="paper-sheet" id="sheet-preview">
+                    <div class="sheet-header">
+                        <img src="img/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150x50/5A378C/FFFFFF?text=@Aprendizajess'">
+                        <div class="sheet-title" id="sheet-title">Refuerzo Pedagógico</div>
+                    </div>
+                    
+                    <div class="exercises-grid" id="exercises-container"></div>
+
+                    <div class="sheet-footer">
+                        📷 TikTok/IG: @Aprendizajess &nbsp; | &nbsp; 💬 WhatsApp: +584241214452
+                    </div>
+                </div>
+
+                <div class="paper-sheet answers-section" id="answers-preview" style="display: block;">
+                    <div class="sheet-header">
+                        <div class="sheet-title">HOJA DE RESPUESTAS (DOCENTE)</div>
+                    </div>
+                    <div style="font-size: 1.2rem; line-height: 2;" id="answers-container"></div>
+                    <div class="sheet-footer">Material de Uso Exclusivo Especialistas @Aprendizajess</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOperation = '';
+
+        function navigate(screenName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+
+            if (screenName === 'home') {
+                document.getElementById('screen-home').classList.add('active');
+                document.getElementById('top-nav').style.display = 'none';
+                document.getElementById('workspace-area').classList.remove('active');
+            } else {
+                document.getElementById('workspace-area').classList.add('active');
+                document.getElementById('top-nav').style.display = 'flex';
+                document.getElementById('nav-' + screenName).classList.add('active');
+                currentOperation = screenName;
+                buildConfigPanel(screenName);
+                clearPreview();
+            }
+        }
+
+        function buildConfigPanel(type) {
+            const panel = document.getElementById('dynamic-config');
+            let html = `<h2>Configuración: ${capitalize(type)}</h2>`;
+
+            let maxQty = type === 'tablas' ? 30 : 10;
+            html += `
+                <div class="form-group">
+                    <label>Cantidad de operaciones:</label>
+                    <input type="number" id="cfg-qty" min="1" max="${maxQty}" value="6">
+                </div>
+            `;
+
+            if (type === 'suma' || type === 'resta') {
+                html += `
+                    <div class="form-group">
+                        <label>Tipo de cifras:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-enteros" checked> Enteros</label>
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-decimales"> Decimales</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Modalidad:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-mod-1" checked> ${type === 'suma' ? 'Llevando' : 'Prestando'}</label>
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-mod-2" checked> ${type === 'suma' ? 'Sin llevar' : 'Sin prestar'}</label>
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-mod-3" checked> Mixta</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad de dígitos:</label>
+                        <input type="number" id="cfg-digits" min="1" max="10" value="3">
+                    </div>
+                `;
+            }
+
+            if (type === 'multiplicacion') {
+                html += `
+                    <div class="form-group">
+                        <label>Tipo de cifras:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-enteros" checked> Enteros</label>
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-decimales"> Decimales</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Dígitos del Multiplicando (Arriba):</label>
+                        <input type="number" id="cfg-digits-1" min="1" max="10" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Dígitos del Multiplicador (Abajo):</label>
+                        <input type="number" id="cfg-digits-2" min="1" max="4" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Formato:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-fmt-v" checked> Vertical</label>
+                            <label class="checkbox-label"><input type="checkbox" id="cfg-fmt-h"> Horizontal</label>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (type === 'tablas') {
+                html += `
+                    <div class="form-group">
+                        <label>Tablas a estudiar (0 al 10):</label>
+                        <div class="checkbox-group" style="display: grid; grid-template-columns: 1fr 1fr;">
+                            ${[1,2,3,4,5,6,7,8,9,10].map(n => `<label class="checkbox-label"><input type="checkbox" class="cfg-tbl" value="${n}" checked> Tabla del ${n}</label>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (type === 'division') {
+                html += `
+                    <div class="form-group">
+                        <label>Cifras del Divisor:</label>
+                        <select id="cfg-div-divisor">
+                            <option value="1" selected>1 Cifra</option>
+                            <option value="2">2 Cifras</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cifras del Dividendo:</label>
+                        <input type="number" id="cfg-digits-div" min="1" max="8" value="4">
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="btn-group">
+                    <button class="btn btn-clear" onclick="clearPreview()">Borrar</button>
+                    <button class="btn btn-generate" onclick="generateExercises()">Vista Previa</button>
+                </div>
+            `;
+
+            panel.innerHTML = html;
+        }
+
+        // --- UTILIDADES MATEMÁTICAS ---
+        function rndStr(length) {
+            let res = Math.floor(Math.random() * 9) + 1;
+            for(let i=1; i<length; i++) res += '' + Math.floor(Math.random() * 10);
+            return res;
+        }
+
+        function generateNoCarryAddition(length) {
+            let a = '', b = '';
+            for(let i=0; i<length; i++) {
+                let d1 = i===0 ? Math.floor(Math.random()*8)+1 : Math.floor(Math.random()*10);
+                let maxD2 = 9 - d1;
+                let d2 = i===0&&maxD2>0 ? Math.floor(Math.random()*maxD2)+1 : Math.floor(Math.random()*(maxD2+1));
+                a += d1; b += d2;
+            }
+            return [a, b];
+        }
+
+        function generateNoBorrowSub(length) {
+            let a = '', b = '';
+            for(let i=0; i<length; i++) {
+                let d1 = i===0 ? Math.floor(Math.random()*8)+2 : Math.floor(Math.random()*10);
+                let d2 = i===0 ? Math.floor(Math.random()*(d1-1))+1 : Math.floor(Math.random()*(d1+1));
+                a += d1; b += d2;
+            }
+            return [a, b];
+        }
+
+        // Lógica Decimal
+        function insertDecimalComma(str) {
+            if (str.length <= 1) return str;
+            let pos = Math.floor(Math.random() * (str.length - 1)) + 1;
+            return str.slice(0, pos) + ',' + str.slice(pos);
+        }
+
+        function alignDecimals(n1, n2) {
+            let parts1 = n1.split(',');
+            let parts2 = n2.split(',');
+            let dec1 = parts1[1] || '';
+            let dec2 = parts2[1] || '';
+            let maxDec = Math.max(dec1.length, dec2.length);
+            
+            if (maxDec > 0) {
+                dec1 = dec1.padEnd(maxDec, '0');
+                dec2 = dec2.padEnd(maxDec, '0');
+                return [parts1[0] + ',' + dec1, parts2[0] + ',' + dec2];
+            }
+            return [n1, n2];
+        }
+
+        let parseVal = (str) => parseFloat(str.replace(',', '.'));
+
+        function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+        const letters = "abcdefghijklmnopqrstuvwxyz".split('');
+
+        // --- GENERADOR DE CUADRÍCULA HTML ---
+        function formatGridVertical(charsTop, charsBottom, symbol) {
+            let len1 = charsTop.length;
+            let len2 = charsBottom.length;
+            let maxLen = Math.max(len1, len2) + 1;
+            
+            let r1 = Array(maxLen - len1).fill('').concat(charsTop.split(''));
+            let r2 = [symbol].concat(Array(maxLen - 1 - len2).fill('')).concat(charsBottom.split(''));
+            
+            let html = `<div class="op-grid" style="grid-template-columns: repeat(${maxLen}, 25px);">`;
+            
+            r1.forEach(c => html += `<div class="cell">${c}</div>`);
+            r2.forEach(c => html += `<div class="cell math-line-bottom">${c}</div>`);
+            
+            // Celdas vacías para que el estudiante resuelva
+            for(let i=0; i < maxLen * 2; i++) {
+                html += `<div class="cell"></div>`;
+            }
+            
+            html += `</div>`;
+            return html;
+        }
+
+        function formatGridHorizontal(str) {
+            let clean = str.replace(/ /g, '').split(''); 
+            let html = `<div class="op-grid" style="grid-template-columns: repeat(${clean.length}, 25px);">`;
+            clean.forEach(c => html += `<div class="cell">${c}</div>`);
+            html += `</div>`;
+            return html;
+        }
+
+        function formatDivisionGrid(dividendo, divisor) {
+            let divStr = dividendo.toString().split('');
+            let diviStr = divisor.toString().split('');
+            let totalCols = divStr.length + diviStr.length + 1;
+            
+            let html = `<div class="op-grid" style="grid-template-columns: repeat(${totalCols}, 25px);">`;
+            
+            // Fila 1 con diseño venezolano en L invertida
+            divStr.forEach(c => html += `<div class="cell">${c}</div>`);
+            html += `<div class="cell div-line-left div-line-bottom">${diviStr[0]}</div>`;
+            for(let i=1; i<diviStr.length; i++) {
+                html += `<div class="cell div-line-bottom">${diviStr[i]}</div>`;
+            }
+            
+            // Celdas vacías debajo para realizar el proceso
+            for(let r=0; r<4; r++) {
+                for(let c=0; c<totalCols; c++) {
+                    html += `<div class="cell"></div>`;
+                }
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        // --- MOTOR PRINCIPAL ---
+        function generateExercises() {
+            const container = document.getElementById('exercises-container');
+            const ansContainer = document.getElementById('answers-container');
+            const sheetTitle = document.getElementById('sheet-title');
+            
+            container.innerHTML = '';
+            let answersHtml = '<strong>Respuestas:</strong><br>';
+            
+            let qty = parseInt(document.getElementById('cfg-qty').value) || 6;
+            sheetTitle.innerText = `Refuerzo Pedagógico de ${capitalize(currentOperation)}`;
+
+            for (let i = 0; i < qty; i++) {
+                let opHtml = '';
+                let answerText = '';
+                let letter = letters[i] + ')';
+
+                if (currentOperation === 'suma' || currentOperation === 'resta') {
+                    let digits = parseInt(document.getElementById('cfg-digits').value) || 3;
+                    let useDecimals = document.getElementById('cfg-decimales').checked && (!document.getElementById('cfg-enteros').checked || Math.random() > 0.5);
+                    let isCarry = document.getElementById('cfg-mod-1').checked && (!document.getElementById('cfg-mod-2').checked || Math.random() > 0.5);
+                    
+                    let num1Str, num2Str, res;
+                    
+                    if (currentOperation === 'suma') {
+                        if (!isCarry) [num1Str, num2Str] = generateNoCarryAddition(digits);
+                        else { num1Str = rndStr(digits); num2Str = rndStr(digits); }
+                        
+                        if (useDecimals) { num1Str = insertDecimalComma(num1Str); num2Str = insertDecimalComma(num2Str); }
+                        [num1Str, num2Str] = alignDecimals(num1Str, num2Str);
+                        
+                        res = parseVal(num1Str) + parseVal(num2Str);
+                        opHtml = formatGridVertical(num1Str, num2Str, '+');
+                    } else {
+                        if (!isCarry) [num1Str, num2Str] = generateNoBorrowSub(digits);
+                        else { num1Str = rndStr(digits); num2Str = rndStr(digits); }
+                        
+                        if (useDecimals) { num1Str = insertDecimalComma(num1Str); num2Str = insertDecimalComma(num2Str); }
+                        [num1Str, num2Str] = alignDecimals(num1Str, num2Str);
+
+                        // Garantizar que num1 sea mayor para evitar resultados negativos
+                        if (parseVal(num2Str) > parseVal(num1Str)) { let t=num1Str; num1Str=num2Str; num2Str=t; }
+                        
+                        res = parseVal(num1Str) - parseVal(num2Str);
+                        opHtml = formatGridVertical(num1Str, num2Str, '-');
+                    }
+                    
+                    res = Number(res.toFixed(10)); // Evita errores de punto flotante en JS
+                    answerText = res.toString().replace('.', ',');
+                }
+                
+                else if (currentOperation === 'multiplicacion') {
+                    let d1 = parseInt(document.getElementById('cfg-digits-1').value) || 3;
+                    let d2 = parseInt(document.getElementById('cfg-digits-2').value) || 1;
+                    let useDecimals = document.getElementById('cfg-decimales').checked && (!document.getElementById('cfg-enteros').checked || Math.random() > 0.5);
+                    let isHoriz = document.getElementById('cfg-fmt-h')?.checked && (!document.getElementById('cfg-fmt-v')?.checked || Math.random() > 0.5);
+                    
+                    let num1Str = rndStr(d1);
+                    let num2Str = rndStr(d2);
+
+                    if (useDecimals) {
+                        if (d1 > 1 && Math.random() > 0.3) num1Str = insertDecimalComma(num1Str);
+                        if (d2 > 1 && Math.random() > 0.5) num2Str = insertDecimalComma(num2Str);
+                    }
+                    
+                    let res = parseVal(num1Str) * parseVal(num2Str);
+                    res = Number(res.toFixed(10));
+
+                    if (isHoriz) opHtml = formatGridHorizontal(`${num1Str} x ${num2Str} = `);
+                    else opHtml = formatGridVertical(num1Str, num2Str, 'x');
+                    
+                    answerText = res.toString().replace('.', ',');
+                }
+
+                else if (currentOperation === 'tablas') {
+                    let checkboxes = Array.from(document.querySelectorAll('.cfg-tbl:checked'));
+                    let tables = checkboxes.length ? checkboxes.map(c => parseInt(c.value)) : [2,3,4,5];
+                    let t = tables[Math.floor(Math.random() * tables.length)];
+                    let m = Math.floor(Math.random() * 10) + 1;
+                    let format = Math.floor(Math.random() * 3);
+                    let res = t * m;
+
+                    if (format === 0) { opHtml = formatGridHorizontal(`${t} x    = ${res}`); answerText = `${m}`; }
+                    else if (format === 1) { opHtml = formatGridHorizontal(`   x ${m} = ${res}`); answerText = `${t}`; }
+                    else { opHtml = formatGridHorizontal(`${t} x ${m} =   `); answerText = `${res}`; }
+                }
+
+                else if (currentOperation === 'division') {
+                    let divCifras = parseInt(document.getElementById('cfg-div-divisor').value);
+                    let divDigits = parseInt(document.getElementById('cfg-digits-div').value);
+                    
+                    let dividendo = rndStr(divDigits);
+                    let divisor = divCifras === 1 ? (Math.floor(Math.random() * 8) + 2) : (Math.floor(Math.random() * 89) + 10);
+                    
+                    let cociente = Math.floor(parseInt(dividendo) / divisor);
+                    let residuo = parseInt(dividendo) % divisor;
+
+                    opHtml = formatDivisionGrid(dividendo, divisor);
+                    answerText = `C: ${cociente}, R: ${residuo}`;
+                }
+
+                container.innerHTML += `
+                    <div class="exercise-item">
+                        <span class="exercise-letter">${letter}</span>
+                        ${opHtml}
+                    </div>
+                `;
+                answersHtml += `<span style="margin-right: 20px;">${letter} ${answerText}</span>`;
+            }
+            ansContainer.innerHTML = answersHtml;
+            document.getElementById('answers-preview').style.display = 'block';
+        }
+
+        function clearPreview() {
+            document.getElementById('exercises-container').innerHTML = '<p style="color:#9ca3af; font-size:1rem; font-weight:normal; grid-column:span 2;">Configura los parámetros a la izquierda y presiona "Vista Previa".</p>';
+            document.getElementById('answers-container').innerHTML = '';
+            document.getElementById('sheet-title').innerText = 'Refuerzo Pedagógico';
+            document.getElementById('answers-preview').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
