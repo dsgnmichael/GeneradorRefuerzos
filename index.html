@@ -370,7 +370,7 @@
     </nav>
 
     <div id="screen-home" class="screen active">
-        <img src="img/logo.png" alt="Logo @Aprendizajess" class="hero-logo" onerror="this.src='https://via.placeholder.com/250x80/5A378C/FFFFFF?text=Logo+Aprendizajess'">
+        <img src="img/logo.png" alt="Logo @Aprendizajess" class="hero-logo" onerror="this.src='https://lh3.googleusercontent.com/d/1D6ZBBGDjmHSZH34EIHxRtCC89Lu3_JoZ">
         <h1>Generador de Operaciones</h1>
         <p class="subtitle">Herramienta académica exclusiva del consultorio <strong>@Aprendizajess</strong>, diseñada para que nuestros especialistas generen hojas de refuerzo matemático personalizadas.</p>
         
@@ -400,12 +400,12 @@
 
             <div class="preview-panel">
                 <div style="width: 100%; max-width: 215.9mm;">
-                    <button class="btn btn-action" onclick="window.print()">🖨️ Descargar PDF / Imprimir Hojas</button>
+                    <button class="btn btn-action" id="btnPrint" onclick="imprimirDocumento()">🖨️ Descargar PDF / Imprimir Hojas</button>
                 </div>
                 
                 <div class="paper-sheet" id="sheet-preview">
                     <div class="sheet-header">
-                        <img src="img/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150x50/5A378C/FFFFFF?text=@Aprendizajess'">
+                        <img src="img/logo.png" alt="Logo" onerror="this.src='https://lh3.googleusercontent.com/d/1D6ZBBGDjmHSZH34EIHxRtCC89Lu3_JoZ'">
                         <div class="sheet-title" id="sheet-title">Refuerzo Pedagógico</div>
                     </div>
                     
@@ -777,6 +777,26 @@
             document.getElementById('sheet-title').innerText = 'Refuerzo Pedagógico';
             document.getElementById('answers-preview').style.display = 'none';
         }
+
+// --- FUNCIÓN DE IMPRESIÓN ---
+function imprimirDocumento() {
+    const btn = document.getElementById('btnPrint');
+    const textoOriginal = btn.innerHTML;
+    
+    // Cambia el texto del botón temporalmente para dar feedback al usuario
+    btn.innerHTML = '⏳ Preparando documento...';
+    btn.style.backgroundColor = '#6B7280'; // Color gris
+    
+    // Añadimos un retraso de 500ms para asegurar que el DOM y los estilos estén listos
+    setTimeout(() => {
+        // Restauramos el botón a su estado normal
+        btn.innerHTML = textoOriginal;
+        btn.style.backgroundColor = 'var(--success)';
+        
+        // Ejecutamos la orden nativa de impresión del navegador
+        window.print();
+    }, 500);
+}
     </script>
 </body>
 </html>
