@@ -323,8 +323,9 @@
             width: 100%;
             text-align: center;
             font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--primary);
+            font-weight: normal; /* <--- Quita la negrita */
+            font-style: italic;  /* <--- Agrega la cursiva */
+            color: #9CA3AF;
             background: rgba(255,255,255,0.9);
             padding: 5px 0;
         }
@@ -400,7 +401,7 @@
 
             <div class="preview-panel">
                 <div style="width: 100%; max-width: 215.9mm;">
-                    <button class="btn btn-action" id="btnPrint" onclick="imprimirDocumento()">🖨️ Descargar PDF / Imprimir Hojas</button>
+                    <button class="btn btn-action" id="btnPrint" onclick="imprimirDocumento()">🖨️ Descargar / Imprimir</button>
                 </div>
                 
                 <div class="paper-sheet" id="sheet-preview">
@@ -412,7 +413,7 @@
                     <div class="exercises-grid" id="exercises-container"></div>
 
                     <div class="sheet-footer">
-                        📷 TikTok/IG: @Aprendizajess &nbsp; | &nbsp; 💬 WhatsApp: +584241214452
+                        📷 @Aprendizajess &nbsp; | &nbsp; 💬 0424.121.44.52
                     </div>
                 </div>
 
